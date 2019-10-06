@@ -73,12 +73,14 @@ class Room
     @description = description
   end
 
-  def things
-    @things
+  def examine
+    puts "look - Look around you"
+    puts "examine here - Get a list of commands for what you can do."
+    puts "quit - Quit the game."
   end
 
-  def description
-    @description
+  def look
+    puts @description
   end
 
   def get_thing(thing_name)
@@ -126,12 +128,14 @@ if ["yes", "y"].include?(answer)
 
   while true
     if input == 'examine here'
-      puts "look - Look around you"
-      puts "examine here - Get a list of commands for what you can do."
-      puts "quit - Quit the game."
+      room.examine
 
     elsif input == 'look'
-      puts room.description
+      room.look
+
+    elsif input == 'quit'
+      puts "Bye."
+      break
 
     elsif input.split.length == 2
       thing_name = input.split[1]
@@ -149,10 +153,6 @@ if ["yes", "y"].include?(answer)
         puts "There's no #{thing_name} here. Try 'look' to see what's around you."
       end
 
-    elsif input == 'quit'
-      puts "Bye."
-      break
-
     else
       puts "Invalid command. Try 'examine here'"
 
@@ -160,7 +160,6 @@ if ["yes", "y"].include?(answer)
 
     input = get_answer
   end
-
 
 else
   puts "Bye."
