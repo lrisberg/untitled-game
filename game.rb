@@ -45,6 +45,30 @@ if ["yes", "y"].include?(answer)
     def actions
       @actions
     end
+
+    def has_action?(action_name)
+      if action_name == 'examine'
+        return true
+      end
+
+      action = @actions.find do |a|
+        a.name == action_name
+      end
+
+      !action.nil?
+    end
+
+    def do_action(action_name)
+      if action_name == 'examine'
+        self.examine
+      else
+        action = @actions.find do |a|
+          a.name == action_name
+        end
+
+        action.execute
+      end
+    end
   end
 
   class Action
@@ -80,6 +104,16 @@ if ["yes", "y"].include?(answer)
     def description
       @description
     end
+
+    def get_thing(thing_name)
+      @things.find do |t|
+        t.name == thing_name
+      end
+    end
+
+    def has_thing?(thing_name)
+      !get_thing(thing_name).nil?
+    end
   end
 
   room = Room.new(
@@ -103,24 +137,14 @@ if ["yes", "y"].include?(answer)
       thing_name = input.split[1]
       action_name = input.split[0]
 
-      thing = room.things.find do |thing|
-        thing.name == thing_name
-      end
-
-      if thing
-        if action_name == "examine"
-          thing.examine
+      if room.has_thing?(thing_name)
+        thing = room.get_thing(thing_name)
+        if thing.has_action?(action_name)
+          thing.do_action(action_name)
         else
-          action = thing.actions.find do |action|
-            action.name == action_name
-          end
-
-          if action
-            action.execute
-          else
-            puts "Unrecognized command. Try 'examine here'"
-          end
+          puts "Unrecognized command. Try 'examine here'"
         end
+
       else
         puts "Unrecognized command. Try 'examine here'"
       end
