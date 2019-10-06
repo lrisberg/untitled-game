@@ -2,6 +2,96 @@ def get_answer
   gets.strip
 end
 
+class Thing
+  def initialize(name, actions)
+    @name = name
+    @actions = actions
+  end
+
+  def examine
+    @actions.map do |action|
+      puts "#{action.name} - #{action.description}"
+    end
+  end
+
+  def name
+    @name
+  end
+
+  def actions
+    @actions
+  end
+
+  def has_action?(action_name)
+    if action_name == 'examine'
+      return true
+    end
+
+    action = @actions.find do |a|
+      a.name == action_name
+    end
+
+    !action.nil?
+  end
+
+  def do_action(action_name)
+    if action_name == 'examine'
+      self.examine
+    else
+      action = @actions.find do |a|
+        a.name == action_name
+      end
+
+      action.execute
+    end
+  end
+end
+
+class Action
+  def initialize(name, description, outcome)
+    @name = name
+    @description = description
+    @outcome = outcome
+  end
+
+  def name
+    @name
+  end
+
+  def description
+    @description
+  end
+
+  def execute
+    puts @outcome
+  end
+end
+
+class Room
+  def initialize(things, description)
+    @things = things
+    @description = description
+  end
+
+  def things
+    @things
+  end
+
+  def description
+    @description
+  end
+
+  def get_thing(thing_name)
+    @things.find do |t|
+      t.name == thing_name
+    end
+  end
+
+  def has_thing?(thing_name)
+    !get_thing(thing_name).nil?
+  end
+end
+
 
 puts "Would you like to play this game? (yes/no)"
 
@@ -25,96 +115,6 @@ if ["yes", "y"].include?(answer)
   puts "Type 'examine here' for a list of things you can do in this room."
 
   input = get_answer
-
-  class Thing
-    def initialize(name, actions)
-      @name = name
-      @actions = actions
-    end
-
-    def examine
-      @actions.map do |action|
-        puts "#{action.name} - #{action.description}"
-      end
-    end
-
-    def name
-      @name
-    end
-
-    def actions
-      @actions
-    end
-
-    def has_action?(action_name)
-      if action_name == 'examine'
-        return true
-      end
-
-      action = @actions.find do |a|
-        a.name == action_name
-      end
-
-      !action.nil?
-    end
-
-    def do_action(action_name)
-      if action_name == 'examine'
-        self.examine
-      else
-        action = @actions.find do |a|
-          a.name == action_name
-        end
-
-        action.execute
-      end
-    end
-  end
-
-  class Action
-    def initialize(name, description, outcome)
-      @name = name
-      @description = description
-      @outcome = outcome
-    end
-
-    def name
-      @name
-    end
-
-    def description
-      @description
-    end
-
-    def execute
-      puts @outcome
-    end
-  end
-
-  class Room
-    def initialize(things, description)
-      @things = things
-      @description = description
-    end
-
-    def things
-      @things
-    end
-
-    def description
-      @description
-    end
-
-    def get_thing(thing_name)
-      @things.find do |t|
-        t.name == thing_name
-      end
-    end
-
-    def has_thing?(thing_name)
-      !get_thing(thing_name).nil?
-    end
-  end
 
   room = Room.new(
     [
@@ -142,11 +142,11 @@ if ["yes", "y"].include?(answer)
         if thing.has_action?(action_name)
           thing.do_action(action_name)
         else
-          puts "Unrecognized command. Try 'examine here'"
+          puts "You can't #{action_name} this #{thing_name}. Try 'examine #{thing_name}'."
         end
 
       else
-        puts "Unrecognized command. Try 'examine here'"
+        puts "There's no #{thing_name} here. Try 'look' to see what's around you."
       end
 
     elsif input == 'quit'
@@ -154,7 +154,7 @@ if ["yes", "y"].include?(answer)
       break
 
     else
-      puts "Unrecognized command. Try 'examine here'"
+      puts "Invalid command. Try 'examine here'"
 
     end
 
