@@ -118,31 +118,64 @@ if ["yes", "y"].include?(answer)
 
   input = get_answer
 
-  room = Room.new(
+  room1 = Room.new(
     [
       Thing.new("cat", [Action.new("pet", "Pet the cat.", "The cat purrs."), Action.new("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
       Thing.new("chair", [Action.new("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair."), Action.new("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.")])
     ],
-    "You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There's a chair in the corner."
+    "You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There's a chair in the corner. There's a door to the east."
   )
+
+  room2 = Room.new(
+    [
+
+    ],
+    "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
+  )
+
+  current_room = room1
 
   while true
     if input == 'examine here'
-      room.examine
+      current_room.examine
 
     elsif input == 'look'
-      room.look
+      current_room.look
 
     elsif input == 'quit'
       puts "Bye."
       break
 
+    elsif input == 'north'
+      puts "There's no door to the north."
+
+    elsif input == 'east'
+      if (current_room == room1)
+        puts "You make your way east."
+        current_room = room2
+        current_room.look
+      else
+        puts "There's no door to the east."
+      end
+
+    elsif input == 'south'
+      puts "There's no door to the south."
+
+    elsif input == 'west'
+      if (current_room == room2)
+        puts "You make your way west."
+        current_room = room1
+        current_room.look
+      else
+        puts "There's no door to the west."
+      end
+
     elsif input.split.length == 2
       thing_name = input.split[1]
       action_name = input.split[0]
 
-      if room.has_thing?(thing_name)
-        thing = room.get_thing(thing_name)
+      if current_room.has_thing?(thing_name)
+        thing = current_room.get_thing(thing_name)
         if thing.has_action?(action_name)
           thing.do_action(action_name)
         else
