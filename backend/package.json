@@ -6,10 +6,12 @@
   "author": "Lauren Risberg",
   "license": "unlicensed",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "game": "node game.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "express-ws": "^4.0.0"
+    "express-ws": "^4.0.0",
+    "readline-sync": "^1.4.10"
   }
 }
