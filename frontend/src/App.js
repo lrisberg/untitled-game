@@ -1,26 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Feed from './components/feed';
+import Navigator from './components/navigator';
+import Stats from './components/stats';
+import './styles/App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+
+const client = new W3CWebSocket('ws://127.0.0.1:3001/api/game');
+
+class App extends React.Component {
+  componentWillMount() {
+    client.onmessage = (message) => {
+      console.log(message);
+    };
+  }
+
+  render() {
+    return (
+      <div className="game">
+        <Feed />
+        <Navigator />
+        <Stats />
+      </div>
+    );
+  }
 }
 
 export default App;
