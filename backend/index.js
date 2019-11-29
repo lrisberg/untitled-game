@@ -13,14 +13,14 @@ app.ws('/api/game', function(ws, req) {
   // start the game...
   const reactions = game.start();
   reactions.forEach((reaction) => {
-    ws.send(reaction.getOutput());
+    ws.send(JSON.stringify(reaction.getOutput()));
   });
 
   ws.on('message', function(msg) {
     // send message onto game...
     const reactions = game.acceptMessage(msg);
     reactions.forEach((reaction) => {
-      ws.send(reaction.getOutput());
+      ws.send(JSON.stringify(reaction.getOutput()));
 
       if (reaction instanceof EndGameReaction) {
         ws.close();

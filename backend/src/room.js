@@ -24,6 +24,10 @@ class Room {
     })
   }
 
+  getThings = () => {
+    return this.things;
+  }
+
   hasThing = (thingName) => {
     return this.getThing(thingName) !== undefined;
   }

@@ -4,7 +4,10 @@ class Reaction {
   }
 
   getOutput = () => {
-    return this.output;
+    return {
+      type: 'MESSAGE',
+      message: this.output,
+    }
   }
 }
 

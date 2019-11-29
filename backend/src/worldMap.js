@@ -1,4 +1,5 @@
 const Reaction = require('./reaction');
+const ThingsUpdatedReaction = require('./thingsUpdatedReaction');
 
 class WorldMap {
   constructor(initialRoom) {
@@ -21,7 +22,9 @@ class WorldMap {
   moveEast() {
     if (this.eastOf.has(this.currentRoom)) {
       this.currentRoom = this.eastOf.get(this.currentRoom);
-      return [new Reaction('You make your way east.')].concat(this.currentRoom.look());
+      return [new Reaction('You make your way east.')]
+        .concat(this.currentRoom.look())
+        .concat([new ThingsUpdatedReaction(this.currentRoom.getThings())]);
     }
     else {
       return [new Reaction('There\'s no door to the east.')];
@@ -31,7 +34,9 @@ class WorldMap {
   moveWest() {
     if (this.westOf.has(this.currentRoom)) {
       this.currentRoom = this.westOf.get(this.currentRoom);
-      return [new Reaction('You make your way west.')].concat(this.currentRoom.look())
+      return [new Reaction('You make your way west.')]
+        .concat(this.currentRoom.look())
+        .concat([new ThingsUpdatedReaction(this.currentRoom.getThings())]);
     }
     else {
       return [new Reaction('There\'s no door to the west.')];

@@ -10,16 +10,27 @@ const client = new W3CWebSocket('ws://127.0.0.1:3001/api/game');
 
 class App extends React.Component {
   componentWillMount() {
+
     client.onmessage = (message) => {
-      this.setState({
-        messages: [...this.state.messages, message.data],
-      })
+      const data = JSON.parse(message.data);
+      console.log(data);
+      if (data.type === 'THINGS_UPDATED') {
+        this.setState({
+          things: [...data.things],
+        })
+      }
+      if (data.type === 'MESSAGE') {
+        this.setState({
+          messages: [...this.state.messages, data.message],
+        })
+      }
     };
   }
 
   state = {
     input: '',
     messages: [],
+    things: [],
   }
 
   render() {
@@ -30,7 +41,7 @@ class App extends React.Component {
         </form>
         <div className="game">
           <Feed messages={this.state.messages} />
-          <Navigator />
+          <Navigator things={this.state.things} />
           <Stats />
         </div>
       </>

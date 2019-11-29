@@ -2,6 +2,7 @@ const Thing = require('./thing');
 const Action = require('./action');
 const Room = require('./room');
 const Reaction = require('./reaction');
+const ThingsUpdatedReaction = require('./thingsUpdatedReaction');
 const EndGameReaction = require('./endGameReaction');
 const WorldMap = require('./worldMap');
 
@@ -50,7 +51,8 @@ class Game {
         return [
           new Reaction(`Your name is ${this.name}`),
           new Reaction('You find yourself on the floor in a dark room. The floor is wet. Eww.'),
-          new Reaction('Type \'examine here\' for a list of things you can do in this room.')
+          new Reaction('Type \'examine here\' for a list of things you can do in this room.'),
+          new ThingsUpdatedReaction(this.worldMap.getCurrentRoom().getThings()),
         ];
       }
     }
