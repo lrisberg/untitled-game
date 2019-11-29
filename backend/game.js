@@ -6,9 +6,9 @@ class Thing {
     this.actions = actions;
   }
 
-  examine = () => {
+  examine = (printOutput) => {
     this.actions.map((action) => {
-      console.log(`${action.name} - ${action.description}`);
+      printOutput(`${action.name} - ${action.description}`);
     });
   }
 
@@ -32,16 +32,16 @@ class Thing {
     return action !== undefined;
   }
 
-  doAction = (actionName) => {
+  doAction = (actionName, printOutput) => {
     if (actionName === 'examine') {
-      this.examine();
+      this.examine(printOutput);
     }
     else {
       const action = this.actions.find((a) => {
         return a.name === actionName
       });
 
-      action.execute();
+      action.execute(printOutput);
     }
   }
 }
@@ -61,8 +61,8 @@ class Action {
     return this.description;
   }
 
-  execute = () => {
-    console.log(this.outcome);
+  execute = (printOutput) => {
+    printOutput(this.outcome);
   }
 }
 
@@ -72,14 +72,14 @@ class Room {
     this.description = description;
   }
 
-  examine = () => {
-    console.log("look - Look around you");
-    console.log("examine here - Get a list of commands for what you can do.");
-    console.log("quit - Quit the game.");
+  examine = (printOutput) => {
+    printOutput("look - Look around you");
+    printOutput("examine here - Get a list of commands for what you can do.");
+    printOutput("quit - Quit the game.");
   }
 
-  look = () => {
-    console.log(this.description);
+  look = (printOutput) => {
+    printOutput(this.description);
   }
 
   getThing = (thingName) => {
@@ -94,7 +94,9 @@ class Room {
 }
 
 class Game {
-  constructor() {
+  constructor(printOutput) {
+    this.printOutput = printOutput;
+
     const room1 = new Room(
       [
         new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs."), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
@@ -117,7 +119,7 @@ class Game {
   }
 
   start = () => {
-    console.log('Would you like to play this game? (yes/no)');
+    this.printOutput('Would you like to play this game? (yes/no)');
   }
 
   acceptMessage = (input) => {
@@ -125,7 +127,7 @@ class Game {
       if (['yes', 'y'].includes(input)) {
         // continue with game
         this.wantToPlay = true;
-        console.log('Enter your character\'s name.');
+        this.printOutput('Enter your character\'s name.');
         return;
       } else {
         // TODO: exit!
@@ -135,55 +137,55 @@ class Game {
 
     if (this.name === null) {
       if (input === '') {
-        console.log('Name cannot be blank. Try again.');
+        this.printOutput('Name cannot be blank. Try again.');
         return;
       } else {
         this.name = input;
 
-        console.log(`Your name is ${this.name}`);
+        this.printOutput(`Your name is ${this.name}`);
 
-        console.log('You find yourself on the floor in a dark room. The floor is wet. Eww.');
+        this.printOutput('You find yourself on the floor in a dark room. The floor is wet. Eww.');
 
-        console.log('Type \'examine here\' for a list of things you can do in this room.');
+        this.printOutput('Type \'examine here\' for a list of things you can do in this room.');
 
         return;
       }
     }
 
     if (input === 'examine here') {
-      this.currentRoom.examine();
+      this.currentRoom.examine(this.printOutput);
     }
     else if (input === 'look') {
-      this.currentRoom.look();
+      this.currentRoom.look(this.printOutput);
     }
     else if (input === 'quit') {
-      console.log('Bye.');
+      this.printOutput('Bye.');
       // quit game?
     }
     else if (input === 'north') {
-      console.log('There\'s no door to the north');
+      this.printOutput('There\'s no door to the north');
     }
     else if (input === 'east') {
       if (this.currentRoom === this.room1) {
-        console.log('You make your way east');
+        this.printOutput('You make your way east');
         this.currentRoom = this.room2;
-        this.currentRoom.look();
+        this.currentRoom.look(this.printOutput);
       }
       else {
-        console.log('There\'s no door to the east');
+        this.printOutput('There\'s no door to the east');
       }
     }
     else if (input === 'south') {
-      console.log('Theres no door to the south.');
+      this.printOutput('Theres no door to the south.');
     }
     else if (input === 'west') {
       if (this.currentRoom === this.room2) {
-        console.log('You make your way west');
+        this.printOutput('You make your way west');
         this.currentRoom = this.room1;
-        this.currentRoom.look();
+        this.currentRoom.look(this.printOutput);
       }
       else {
-        console.log('There\'s no door to the west');
+        this.printOutput('There\'s no door to the west');
       }
     }
     else if (input.split(" ").length === 2) {
@@ -194,18 +196,18 @@ class Game {
       if (this.currentRoom.hasThing(thingName)) {
         const thing = this.currentRoom.getThing(thingName);
         if (thing.hasAction(actionName)) {
-          thing.doAction(actionName);
+          thing.doAction(actionName, this.printOutput);
         }
         else {
-          console.log(`You can't ${actionName} this ${thingName}. Try 'examine ${thingName}'.`);
+          this.printOutput(`You can't ${actionName} this ${thingName}. Try 'examine ${thingName}'.`);
         }
       }
       else {
-        console.log(`There's no ${thingName} here. Try 'look' to see what's around you.`);
+        this.printOutput(`There's no ${thingName} here. Try 'look' to see what's around you.`);
       }
     }
     else {
-      console.log("Invalid command. Try 'examine here'");
+      this.printOutput("Invalid command. Try 'examine here'");
     }
   }
 }

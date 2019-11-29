@@ -8,7 +8,7 @@ var expressWs = require('express-ws')(app);
 app.ws('/api/game', function(ws, req) {
 
   // create a new game
-  const game = new Game();
+  const game = new Game((line) => { ws.send(line); });
   // start the game...
   game.start();
 
