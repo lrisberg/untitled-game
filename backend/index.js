@@ -17,7 +17,6 @@ app.ws('/api/game', function(ws, req) {
 
   ws.on('message', function(msg) {
     // send message onto game...
-    console.debug("MESSAGE IN: ", msg)
     const reactions = game.acceptMessage(msg);
     reactions.forEach((reaction) => {
       ws.send(reaction.getOutput());

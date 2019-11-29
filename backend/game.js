@@ -103,6 +103,65 @@ class Reaction {
   }
 }
 
+class WorldMap {
+  constructor(initialRoom) {
+    this.eastOf = new Map();
+    this.westOf = new Map();
+    this.northOf = new Map();
+    this.southOf = new Map();
+    this.currentRoom = initialRoom;
+  }
+
+  getCurrentRoom = () => {
+    return this.currentRoom;
+  }
+
+  addEastOf(eastern, center) {
+    this.eastOf.set(center, eastern);
+    this.westOf.set(eastern, center);
+  }
+
+  moveEast() {
+    if (this.eastOf.has(this.currentRoom)) {
+      this.currentRoom = this.eastOf.get(this.currentRoom);
+      return [new Reaction('You make your way east.')].concat(this.currentRoom.look());
+    }
+    else {
+      return [new Reaction('There\'s no door to the east.')];
+    }
+  }
+
+  moveWest() {
+    if (this.westOf.has(this.currentRoom)) {
+      this.currentRoom = this.westOf.get(this.currentRoom);
+      return [new Reaction('You make your way west.')].concat(this.currentRoom.look())
+    }
+    else {
+      return [new Reaction('There\'s no door to the west.')];
+    }
+  }
+
+  moveNorth() {
+    if (this.northOf.has(this.currentRoom)) {
+      this.currentRoom = this.northOf.get(this.currentRoom);
+      return [new Reaction('You make your way north.')].concat(this.currentRoom.look())
+    }
+    else {
+      return [new Reaction('There\'s no door to the north.')];
+    }
+  }
+
+  moveNorth() {
+    if (this.southOf.has(this.currentRoom)) {
+      this.currentRoom = this.southOf.get(this.currentRoom);
+      return [new Reaction('You make your way south.')].concat(this.currentRoom.look())
+    }
+    else {
+      return [new Reaction('There\'s no door to the south.')];
+    }
+  }
+}
+
 class Game {
   constructor() {
     const room1 = new Room(
@@ -118,9 +177,9 @@ class Game {
       "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
     )
 
-    this.currentRoom = room1;
-    this.room1 = room1;
-    this.room2 = room2;
+    this.worldMap = new WorldMap(room1);
+    this.worldMap.addEastOf(room2, room1);
+
 
     this.wantToPlay = null;
     this.name = null;
@@ -157,46 +216,34 @@ class Game {
     }
 
     if (input === 'examine here') {
-      return this.currentRoom.examine();
+      return this.worldMap.getCurrentRoom().examine();
     }
     else if (input === 'look') {
-      return this.currentRoom.look();
+      return this.worldMap.getCurrentRoom().look();
     }
     else if (input === 'quit') {
       return [new Reaction('Bye.')];
       // quit game?
     }
     else if (input === 'north') {
-      return [new Reaction('There\'s no door to the north')];
+      return this.worldMap.moveNorth();
     }
     else if (input === 'east') {
-      if (this.currentRoom === this.room1) {
-        this.currentRoom = this.room2;
-        return [new Reaction('You make your way east')].concat(this.currentRoom.look());
-      }
-      else {
-        return [new Reaction('There\'s no door to the east')];
-      }
+      return this.worldMap.moveEast();
     }
     else if (input === 'south') {
-      return [new Reaction('Theres no door to the south.')];
+      return this.worldMap.moveSouth();
     }
     else if (input === 'west') {
-      if (this.currentRoom === this.room2) {
-        this.currentRoom = this.room1;
-        return [new Reaction('You make your way west')].concat(this.currentRoom.look())
-      }
-      else {
-        return [new Reaction('There\'s no door to the west')];
-      }
+      return this.worldMap.moveWest();
     }
     else if (input.split(" ").length === 2) {
 
       const thingName = input.split(" ")[1];
       const actionName = input.split(" ")[0];
 
-      if (this.currentRoom.hasThing(thingName)) {
-        const thing = this.currentRoom.getThing(thingName);
+      if (this.worldMap.getCurrentRoom().hasThing(thingName)) {
+        const thing = this.worldMap.getCurrentRoom().getThing(thingName);
         if (thing.hasAction(actionName)) {
           return thing.doAction(actionName);
         }
