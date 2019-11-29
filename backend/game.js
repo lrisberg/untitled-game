@@ -93,59 +93,81 @@ class Room {
   }
 }
 
-console.log('Would you like to play this game? (yes/no)');
-const answer = readlineSync.question('');
+class Game {
+  constructor() {
+    const room1 = new Room(
+      [
+        new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs."), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
+        new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair."), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.")])
+      ],
+      'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.'
+    )
 
-if (['yes', 'y'].includes(answer)) {
-  console.log('Enter your character\'s name.');
-  let name = readlineSync.question();
+    const room2 = new Room(
+      [],
+      "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
+    )
 
-  while (name === '') {
-    console.log('Name cannot be blank. Try again.');
-    name = readlineSync.question('');
+    this.currentRoom = room1;
+    this.room1 = room1;
+    this.room2 = room2;
+
+    this.wantToPlay = null;
+    this.name = null;
   }
 
-  console.log(`Your name is ${name}`);
+  start = () => {
+    console.log('Would you like to play this game? (yes/no)');
+  }
 
-  console.log('You find yourself on the floor in a dark room. The floor is wet. Eww.');
+  acceptMessage = (input) => {
+    if (this.wantToPlay === null) {
+      if (['yes', 'y'].includes(input)) {
+        // continue with game
+        this.wantToPlay = true;
+        console.log('Enter your character\'s name.');
+        return;
+      } else {
+        // TODO: exit!
+        return;
+      }
+    }
 
-  console.log('Type \'examine here\' for a list of things you can do in this room.');
-  let input = readlineSync.question('');
+    if (this.name === null) {
+      if (input === '') {
+        console.log('Name cannot be blank. Try again.');
+        return;
+      } else {
+        this.name = input;
 
-  const room1 = new Room(
-    [
-      new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs."), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
-      new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair."), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.")])
-    ],
-    'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.'
-  )
+        console.log(`Your name is ${this.name}`);
 
-  const room2 = new Room(
-    [],
-    "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
-  )
+        console.log('You find yourself on the floor in a dark room. The floor is wet. Eww.');
 
-  let currentRoom = room1;
+        console.log('Type \'examine here\' for a list of things you can do in this room.');
 
-  while (true) {
+        return;
+      }
+    }
+
     if (input === 'examine here') {
-      currentRoom.examine();
+      this.currentRoom.examine();
     }
     else if (input === 'look') {
-      currentRoom.look();
+      this.currentRoom.look();
     }
     else if (input === 'quit') {
       console.log('Bye.');
-      break;
+      // quit game?
     }
     else if (input === 'north') {
       console.log('There\'s no door to the north');
     }
     else if (input === 'east') {
-      if (currentRoom === room1) {
+      if (this.currentRoom === this.room1) {
         console.log('You make your way east');
-        currentRoom = room2;
-        currentRoom.look();
+        this.currentRoom = this.room2;
+        this.currentRoom.look();
       }
       else {
         console.log('There\'s no door to the east');
@@ -155,10 +177,10 @@ if (['yes', 'y'].includes(answer)) {
       console.log('Theres no door to the south.');
     }
     else if (input === 'west') {
-      if (currentRoom === room2) {
+      if (this.currentRoom === this.room2) {
         console.log('You make your way west');
-        currentRoom = room1;
-        currentRoom.look();
+        this.currentRoom = this.room1;
+        this.currentRoom.look();
       }
       else {
         console.log('There\'s no door to the west');
@@ -169,8 +191,8 @@ if (['yes', 'y'].includes(answer)) {
       const thingName = input.split(" ")[1];
       const actionName = input.split(" ")[0];
 
-      if (currentRoom.hasThing(thingName)) {
-        const thing = currentRoom.getThing(thingName);
+      if (this.currentRoom.hasThing(thingName)) {
+        const thing = this.currentRoom.getThing(thingName);
         if (thing.hasAction(actionName)) {
           thing.doAction(actionName);
         }
@@ -185,10 +207,7 @@ if (['yes', 'y'].includes(answer)) {
     else {
       console.log("Invalid command. Try 'examine here'");
     }
-
-    input = readlineSync.question();
   }
 }
-else {
-  console.log('Bye.');
-}
+
+module.exports = Game;

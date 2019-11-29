@@ -15,14 +15,37 @@ class App extends React.Component {
     };
   }
 
+  state = {
+    input: '',
+  }
+
   render() {
     return (
-      <div className="game">
-        <Feed />
-        <Navigator />
-        <Stats />
-      </div>
+      <>
+        <form onSubmit={this.handleSubmit}>
+          <input onChange={this.handleChange} value={this.state.input} type="text" />
+        </form>
+        <div className="game">
+          <Feed />
+          <Navigator />
+          <Stats />
+        </div>
+      </>
     );
+  }
+
+  handleChange = (event) => {
+    this.setState({
+      input: event.target.value,
+    })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    client.send(this.state.input);
+    this.setState({
+      input: '',
+    })
   }
 }
 
