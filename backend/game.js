@@ -1,5 +1,3 @@
-const readlineSync = require('readline-sync');
-
 class Thing {
   constructor(name, actions) {
     this.name = name;
