@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const { array } = PropTypes;
+const { array, func } = PropTypes;
 
 export default class Navigator extends React.Component {
   propTypes = {
     things: array.isRequired,
+    examineThing: func.isRequired,
   }
 
   render() {
@@ -14,7 +15,13 @@ export default class Navigator extends React.Component {
 
   renderThings = () => {
     return this.props.things.map((thing) => {
-      return <div>{thing.name}</div>
+      return <div onClick={this.handleClick(thing)}>{thing.name}</div>
     })
+  }
+
+  handleClick = (thing) => {
+    return () => {
+      this.props.examineThing(thing);
+    }
   }
 }

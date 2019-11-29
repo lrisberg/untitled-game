@@ -41,7 +41,7 @@ class App extends React.Component {
         </form>
         <div className="game">
           <Feed messages={this.state.messages} />
-          <Navigator things={this.state.things} />
+          <Navigator things={this.state.things} examineThing={this.examineThing} />
           <Stats />
         </div>
       </>
@@ -60,6 +60,10 @@ class App extends React.Component {
     this.setState({
       input: '',
     })
+  }
+
+  examineThing = (thing) => {
+    client.send(`examine ${thing.name}`);
   }
 }
 
