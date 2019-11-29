@@ -93,20 +93,24 @@ class Room {
   }
 }
 
-const answer = readlineSync.question('Would you like to play this game? (yes/no)');
+console.log('Would you like to play this game? (yes/no)');
+const answer = readlineSync.question('');
 
 if (['yes', 'y'].includes(answer)) {
-  let name = readlineSync.question('Enter your character\'s name.');
+  console.log('Enter your character\'s name.');
+  let name = readlineSync.question();
 
   while (name === '') {
-    name = readlineSync.question('Name cannot be blank. Try again.');
+    console.log('Name cannot be blank. Try again.');
+    name = readlineSync.question('');
   }
 
   console.log(`Your name is ${name}`);
 
   console.log('You find yourself on the floor in a dark room. The floor is wet. Eww.');
 
-  let input = readlineSync.question('Type \'examine here\' for a list of things you can do in this room.')
+  console.log('Type \'examine here\' for a list of things you can do in this room.');
+  let input = readlineSync.question('');
 
   const room1 = new Room(
     [
