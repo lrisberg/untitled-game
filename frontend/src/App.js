@@ -11,7 +11,6 @@ const client = new W3CWebSocket('ws://127.0.0.1:3001/api/game');
 class App extends React.Component {
   componentWillMount() {
     client.onmessage = (message) => {
-      console.log(message.data);
       this.setState({
         messages: [...this.state.messages, message.data],
       })

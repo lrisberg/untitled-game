@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const Game = require('./game');
+const Game = require('./src/game');
 
 var expressWs = require('express-ws')(app);
 
