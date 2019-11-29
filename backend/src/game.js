@@ -2,6 +2,7 @@ const Thing = require('./thing');
 const Action = require('./action');
 const Room = require('./room');
 const Reaction = require('./reaction');
+const EndGameReaction = require('./endGameReaction');
 const WorldMap = require('./worldMap');
 
 class Game {
@@ -36,8 +37,7 @@ class Game {
         this.wantToPlay = true;
         return [new Reaction('Enter your character\'s name.')];
       } else {
-        // TODO: exit!
-        return;
+        return [new EndGameReaction()];
       }
     }
 
@@ -62,8 +62,7 @@ class Game {
       return this.worldMap.getCurrentRoom().look();
     }
     else if (input === 'quit') {
-      return [new Reaction('Bye.')];
-      // quit game?
+      return [new EndGameReaction()];
     }
     else if (input === 'north') {
       return this.worldMap.moveNorth();
