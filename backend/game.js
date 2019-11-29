@@ -1,15 +1,14 @@
 const readlineSync = require('readline-sync');
 
 class Thing {
-  constructor(name, actions, printOutput) {
+  constructor(name, actions) {
     this.name = name;
     this.actions = actions;
-    this.printOutput = printOutput;
   }
 
   examine = () => {
-    this.actions.map((action) => {
-      this.printOutput(`${action.name} - ${action.description}`);
+    return this.actions.map((action) => {
+      return new Reaction(`${action.name} - ${action.description}`);
     });
   }
 
@@ -35,24 +34,23 @@ class Thing {
 
   doAction = (actionName) => {
     if (actionName === 'examine') {
-      this.examine();
+      return this.examine();
     }
     else {
       const action = this.actions.find((a) => {
         return a.name === actionName
       });
 
-      action.execute();
+      return action.execute();
     }
   }
 }
 
 class Action {
-  constructor(name, description, outcome, printOutput) {
+  constructor(name, description, outcome) {
     this.name = name;
     this.description = description;
     this.outcome = outcome;
-    this.printOutput = printOutput;
   }
 
   getName = () => {
@@ -64,25 +62,26 @@ class Action {
   }
 
   execute = () => {
-    this.printOutput(this.outcome);
+    return [new Reaction(this.outcome)];
   }
 }
 
 class Room {
-  constructor(things, description, printOutput) {
+  constructor(things, description) {
     this.things = things;
     this.description = description;
-    this.printOutput = printOutput;
   }
 
   examine = () => {
-    this.printOutput("look - Look around you");
-    this.printOutput("examine here - Get a list of commands for what you can do.");
-    this.printOutput("quit - Quit the game.");
+    return [
+      new Reaction("look - Look around you"),
+      new Reaction("examine here - Get a list of commands for what you can do."),
+      new Reaction("quit - Quit the game."),
+    ]
   }
 
   look = () => {
-    this.printOutput(this.description);
+    return [new Reaction(this.description)];
   }
 
   getThing = (thingName) => {
@@ -96,23 +95,29 @@ class Room {
   }
 }
 
-class Game {
-  constructor(printOutput) {
-    this.printOutput = printOutput;
+class Reaction {
+  constructor(output) {
+    this.output = output;
+  }
 
+  getOutput = () => {
+    return this.output;
+  }
+}
+
+class Game {
+  constructor() {
     const room1 = new Room(
       [
-        new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs.", this.printOutput), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!", this.printOutput)], this.printOutput),
-        new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair.", this.printOutput), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.", this.printOutput)], this.printOutput)
+        new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs."), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
+        new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair."), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.")])
       ],
-      'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.',
-      this.printOutput
+      'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.'
     )
 
     const room2 = new Room(
       [],
-      "This room is full of mirrors. You see yourself everywhere! There's a door to the west.",
-      this.printOutput
+      "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
     )
 
     this.currentRoom = room1;
@@ -124,7 +129,7 @@ class Game {
   }
 
   start = () => {
-    this.printOutput('Would you like to play this game? (yes/no)');
+    return [new Reaction('Would you like to play this game? (yes/no)')];
   }
 
   acceptMessage = (input) => {
@@ -132,8 +137,7 @@ class Game {
       if (['yes', 'y'].includes(input)) {
         // continue with game
         this.wantToPlay = true;
-        this.printOutput('Enter your character\'s name.');
-        return;
+        return [new Reaction('Enter your character\'s name.')];
       } else {
         // TODO: exit!
         return;
@@ -142,55 +146,50 @@ class Game {
 
     if (this.name === null) {
       if (input === '') {
-        this.printOutput('Name cannot be blank. Try again.');
-        return;
+        return [new Reaction('Name cannot be blank. Try again.')];
       } else {
         this.name = input;
 
-        this.printOutput(`Your name is ${this.name}`);
-
-        this.printOutput('You find yourself on the floor in a dark room. The floor is wet. Eww.');
-
-        this.printOutput('Type \'examine here\' for a list of things you can do in this room.');
-
-        return;
+        return [
+          new Reaction(`Your name is ${this.name}`),
+          new Reaction('You find yourself on the floor in a dark room. The floor is wet. Eww.'),
+          new Reaction('Type \'examine here\' for a list of things you can do in this room.')
+        ];
       }
     }
 
     if (input === 'examine here') {
-      this.currentRoom.examine(this.printOutput);
+      return this.currentRoom.examine();
     }
     else if (input === 'look') {
-      this.currentRoom.look(this.printOutput);
+      return this.currentRoom.look();
     }
     else if (input === 'quit') {
-      this.printOutput('Bye.');
+      return [new Reaction('Bye.')];
       // quit game?
     }
     else if (input === 'north') {
-      this.printOutput('There\'s no door to the north');
+      return [new Reaction('There\'s no door to the north')];
     }
     else if (input === 'east') {
       if (this.currentRoom === this.room1) {
-        this.printOutput('You make your way east');
         this.currentRoom = this.room2;
-        this.currentRoom.look(this.printOutput);
+        return [new Reaction('You make your way east')].concat(this.currentRoom.look());
       }
       else {
-        this.printOutput('There\'s no door to the east');
+        return [new Reaction('There\'s no door to the east')];
       }
     }
     else if (input === 'south') {
-      this.printOutput('Theres no door to the south.');
+      return [new Reaction('Theres no door to the south.')];
     }
     else if (input === 'west') {
       if (this.currentRoom === this.room2) {
-        this.printOutput('You make your way west');
         this.currentRoom = this.room1;
-        this.currentRoom.look(this.printOutput);
+        return [new Reaction('You make your way west')].concat(this.currentRoom.look())
       }
       else {
-        this.printOutput('There\'s no door to the west');
+        return [new Reaction('There\'s no door to the west')];
       }
     }
     else if (input.split(" ").length === 2) {
@@ -201,18 +200,18 @@ class Game {
       if (this.currentRoom.hasThing(thingName)) {
         const thing = this.currentRoom.getThing(thingName);
         if (thing.hasAction(actionName)) {
-          thing.doAction(actionName, this.printOutput);
+          return thing.doAction(actionName);
         }
         else {
-          this.printOutput(`You can't ${actionName} this ${thingName}. Try 'examine ${thingName}'.`);
+          return [new Reaction(`You can't ${actionName} this ${thingName}. Try 'examine ${thingName}'.`)];
         }
       }
       else {
-        this.printOutput(`There's no ${thingName} here. Try 'look' to see what's around you.`);
+        return [new Reaction(`There's no ${thingName} here. Try 'look' to see what's around you.`)];
       }
     }
     else {
-      this.printOutput("Invalid command. Try 'examine here'");
+      return [new Reaction("Invalid command. Try 'examine here'")];
     }
   }
 }

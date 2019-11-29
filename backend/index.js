@@ -8,14 +8,20 @@ var expressWs = require('express-ws')(app);
 app.ws('/api/game', function(ws, req) {
 
   // create a new game
-  const game = new Game((line) => { ws.send(line); });
+  const game = new Game();
   // start the game...
-  game.start();
+  const reactions = game.start();
+  reactions.forEach((reaction) => {
+    ws.send(reaction.getOutput());
+  });
 
   ws.on('message', function(msg) {
     // send message onto game...
     console.debug("MESSAGE IN: ", msg)
-    game.acceptMessage(msg);
+    const reactions = game.acceptMessage(msg);
+    reactions.forEach((reaction) => {
+      ws.send(reaction.getOutput());
+    })
   });
 });
 
