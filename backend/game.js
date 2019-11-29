@@ -1,14 +1,15 @@
 const readlineSync = require('readline-sync');
 
 class Thing {
-  constructor(name, actions) {
+  constructor(name, actions, printOutput) {
     this.name = name;
     this.actions = actions;
+    this.printOutput = printOutput;
   }
 
-  examine = (printOutput) => {
+  examine = () => {
     this.actions.map((action) => {
-      printOutput(`${action.name} - ${action.description}`);
+      this.printOutput(`${action.name} - ${action.description}`);
     });
   }
 
@@ -32,25 +33,26 @@ class Thing {
     return action !== undefined;
   }
 
-  doAction = (actionName, printOutput) => {
+  doAction = (actionName) => {
     if (actionName === 'examine') {
-      this.examine(printOutput);
+      this.examine();
     }
     else {
       const action = this.actions.find((a) => {
         return a.name === actionName
       });
 
-      action.execute(printOutput);
+      action.execute();
     }
   }
 }
 
 class Action {
-  constructor(name, description, outcome) {
+  constructor(name, description, outcome, printOutput) {
     this.name = name;
     this.description = description;
     this.outcome = outcome;
+    this.printOutput = printOutput;
   }
 
   getName = () => {
@@ -61,25 +63,26 @@ class Action {
     return this.description;
   }
 
-  execute = (printOutput) => {
-    printOutput(this.outcome);
+  execute = () => {
+    this.printOutput(this.outcome);
   }
 }
 
 class Room {
-  constructor(things, description) {
+  constructor(things, description, printOutput) {
     this.things = things;
     this.description = description;
+    this.printOutput = printOutput;
   }
 
-  examine = (printOutput) => {
-    printOutput("look - Look around you");
-    printOutput("examine here - Get a list of commands for what you can do.");
-    printOutput("quit - Quit the game.");
+  examine = () => {
+    this.printOutput("look - Look around you");
+    this.printOutput("examine here - Get a list of commands for what you can do.");
+    this.printOutput("quit - Quit the game.");
   }
 
-  look = (printOutput) => {
-    printOutput(this.description);
+  look = () => {
+    this.printOutput(this.description);
   }
 
   getThing = (thingName) => {
@@ -99,15 +102,17 @@ class Game {
 
     const room1 = new Room(
       [
-        new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs."), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!")]),
-        new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair."), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.")])
+        new Thing("cat", [new Action("pet", "Pet the cat.", "The cat purrs.", this.printOutput), new Action("snuggle", "Snuggle the cat.", "The cat claws at your face. Ow!", this.printOutput)], this.printOutput),
+        new Thing("chair", [new Action("nudge", "Nudge the chair with your foot.", "You nudge the chair with your foot. It doesn't respond. It's a chair.", this.printOutput), new Action("kick", "Kick the chair hard with your foot!", "You kick the chair. It doesn't respond. It's a chair.", this.printOutput)], this.printOutput)
       ],
-      'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.'
+      'You find yourself on the floor in a dark room. The floor is wet. Eww. You see a black cat staring at you. There\'s a chair in the corner. There\'s a door to the east.',
+      this.printOutput
     )
 
     const room2 = new Room(
       [],
-      "This room is full of mirrors. You see yourself everywhere! There's a door to the west."
+      "This room is full of mirrors. You see yourself everywhere! There's a door to the west.",
+      this.printOutput
     )
 
     this.currentRoom = room1;
