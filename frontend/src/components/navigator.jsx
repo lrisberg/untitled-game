@@ -1,27 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const { array, func } = PropTypes;
+const { arrayOf, func, shape, string } = PropTypes;
+
+const thingShape = shape({
+  name: string.isRequired,
+});
 
 export default class Navigator extends React.Component {
-  propTypes = {
-    things: array.isRequired,
+  static propTypes = {
+    things: arrayOf(thingShape).isRequired,
     examineThing: func.isRequired,
   }
 
-  render() {
-    return <div className="navigator">{this.renderThings()}</div>
-  }
-
   renderThings = () => {
-    return this.props.things.map((thing) => {
-      return <div onClick={this.handleClick(thing)}>{thing.name}</div>
-    })
+    const renderThing = (thing) => <div onClick={this.handleClick(thing)}>{thing.name}</div>;
+    return this.props.things.map(renderThing);
   }
 
-  handleClick = (thing) => {
-    return () => {
-      this.props.examineThing(thing);
-    }
+  handleClick = (thing) => () => { this.props.examineThing(thing); }
+
+  render() {
+    return <div className="navigator">{this.renderThings()}</div>;
   }
 }

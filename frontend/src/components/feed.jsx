@@ -1,22 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const { array } = PropTypes;
+const { arrayOf, string } = PropTypes;
 
 export default class Feed extends React.Component {
   propTypes = {
-    messages: array.isRequired,
+    messages: arrayOf(string).isRequired,
+  }
+
+  renderMessages = () => {
+    const renderMessage = (message) => <div>{message}</div>;
+    return this.props.messages.map(renderMessage);
   }
 
   render() {
     return (
       <div className="feed">{this.renderMessages()}</div>
-    )
-  }
-
-  renderMessages = () => {
-    return this.props.messages.map((message) => {
-      return <div>{message}</div>
-    })
+    );
   }
 }
