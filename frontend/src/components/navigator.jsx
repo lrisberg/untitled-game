@@ -14,7 +14,9 @@ export default class Navigator extends React.Component {
   }
 
   renderThings = () => {
-    const renderThing = (thing) => <div onClick={this.handleClick(thing)}>{thing.name}</div>;
+    const renderThing = (thing, i) => (
+      <div onClick={this.handleClick(thing)} key={i}>{thing.name}</div>
+    );
     return this.props.things.map(renderThing);
   }
 
