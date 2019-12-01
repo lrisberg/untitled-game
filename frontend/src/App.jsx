@@ -80,7 +80,7 @@ class App extends React.Component {
         <div className="game">
           <div className="input">
             <form onSubmit={this.handleSubmit}>
-              <input onChange={this.handleChange} value={this.state.input} type="text" />
+              <input autoFocus onChange={this.handleChange} value={this.state.input} type="text" />
             </form>
           </div>
           <div className="display">
