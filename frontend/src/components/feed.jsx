@@ -8,6 +8,8 @@ export default class Feed extends React.Component {
     messages: arrayOf(string).isRequired,
   }
 
+  renderHeading = () => <h3>Feed</h3>;
+
   renderMessages = () => {
     const renderMessage = (message, i) => <div key={i}>{message}</div>;
     return this.props.messages.map(renderMessage);
@@ -15,7 +17,10 @@ export default class Feed extends React.Component {
 
   render() {
     return (
-      <div className="feed">{this.renderMessages()}</div>
+      <div className="feed">
+        {this.renderHeading()}
+        {this.renderMessages()}
+      </div>
     );
   }
 }

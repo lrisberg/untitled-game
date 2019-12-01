@@ -13,6 +13,8 @@ export default class Navigator extends React.Component {
     examineThing: func.isRequired,
   }
 
+  renderHeading = () => <h3>Navigator</h3>;
+
   renderThings = () => {
     const renderThing = (thing, i) => (
       <div onClick={this.handleClick(thing)} key={i}>{thing.name}</div>
@@ -23,6 +25,11 @@ export default class Navigator extends React.Component {
   handleClick = (thing) => () => { this.props.examineThing(thing); }
 
   render() {
-    return <div className="navigator">{this.renderThings()}</div>;
+    return (
+      <div className="navigator">
+        {this.renderHeading()}
+        {this.renderThings()}
+      </div>
+    );
   }
 }
