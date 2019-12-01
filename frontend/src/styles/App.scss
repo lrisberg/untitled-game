@@ -16,16 +16,23 @@
   border: 1px solid black;
   width: 100%;
   padding: 0 10px;
-}
 
-.feed h3, .navigator h3, .stats h3 {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  text-align: center;
+  h3 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-align: center;
+  }
 }
 
 .feed {
+  .outbound {
+    color: #666666;
+    margin-bottom: 10px;
 
+    &::before {
+      content: "> ";
+    }
+  }
 }
 
 .navigator {
@@ -34,13 +41,4 @@
 
 .stats {
 
-}
-
-.outbound {
-  color: #666666;
-  margin-bottom: 10px;
-}
-
-.outbound::before {
-  content: "> ";
 }

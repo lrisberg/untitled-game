@@ -3,7 +3,7 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import Feed from './components/feed';
 import Navigator from './components/navigator';
 import Stats from './components/stats';
-import './styles/App.css';
+import './styles/App.scss';
 
 const client = new W3CWebSocket('ws://127.0.0.1:3001/api/game');
 
