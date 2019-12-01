@@ -1,7 +1,15 @@
 .game {
+  height: 100vh;
+}
+
+.display {
   display: flex;
   justify-content: space-around;
-  height: 100vh;
+  height: calc(100% - 50px);
+}
+
+.input {
+  height: 50px;
 }
 
 .feed, .navigator, .stats  {

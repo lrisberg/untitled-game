@@ -36,13 +36,17 @@ class App extends React.Component {
   render() {
     return (
       <>
-        <form onSubmit={this.handleSubmit}>
-          <input onChange={this.handleChange} value={this.state.input} type="text" />
-        </form>
         <div className="game">
-          <Feed messages={this.state.messages} />
-          <Navigator things={this.state.things} examineThing={this.examineThing} />
-          <Stats />
+          <div className="input">
+            <form onSubmit={this.handleSubmit}>
+              <input onChange={this.handleChange} value={this.state.input} type="text" />
+            </form>
+          </div>
+          <div className="display">
+            <Feed messages={this.state.messages} />
+            <Navigator things={this.state.things} examineThing={this.examineThing} />
+            <Stats />
+          </div>
         </div>
       </>
     );
