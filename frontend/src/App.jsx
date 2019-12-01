@@ -19,16 +19,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    client.onmessage = (message) => {
-      const data = JSON.parse(message.data);
+    client.onmessage = (wsMessage) => {
+      const data = JSON.parse(wsMessage.data);
       if (data.type === 'THINGS_UPDATED') {
         this.setState({
           things: [...data.things],
         });
       }
       if (data.type === 'MESSAGE') {
+        const message = {
+          text: data.message,
+          type: 'inbound',
+        };
         this.setState((prevState) => ({
-          messages: [...prevState.messages, data.message],
+          messages: [...prevState.messages, message],
         }));
       }
     };
@@ -43,13 +47,31 @@ class App extends React.Component {
   handleSubmit = (event) => {
     event.preventDefault();
     client.send(this.state.input);
+    this.dispatchOutboundMessage(this.state.input);
+    this.resetInput();
+  }
+
+  examineThing = (thing) => {
+    const text = `examine ${thing.name}`;
+    client.send(text);
+    this.dispatchOutboundMessage(text);
+  }
+
+  resetInput = () => {
     this.setState({
       input: '',
     });
   }
 
-  examineThing = (thing) => {
-    client.send(`examine ${thing.name}`);
+  dispatchOutboundMessage = (text) => {
+    const message = {
+      text,
+      type: 'outbound',
+    };
+
+    this.setState((prevState) => ({
+      messages: [...prevState.messages, message],
+    }));
   }
 
   render() {
